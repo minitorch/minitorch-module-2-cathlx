@@ -283,7 +283,7 @@ def zeros(shape: UserShape, backend: TensorBackend = SimpleBackend) -> Tensor:
         new tensor
     """
     return minitorch.Tensor.make(
-        [0] * int(operators.prod(shape)), shape, backend=backend
+        [0] * int(operators.prod(shape)), shape, backend=backend  # type: ignore
     )
 
 
