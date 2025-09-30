@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import random
+from itertools import zip_longest
 from typing import Iterable, Optional, Sequence, Tuple, Union
 
 import numba
 import numpy as np
 import numpy.typing as npt
 from numpy import array, float64
+from operator import itemgetter
 from typing_extensions import TypeAlias
 
 from .operators import prod
@@ -42,9 +44,7 @@ def index_to_position(index: Index, strides: Strides) -> int:
     Returns:
         Position in storage
     """
-
-    # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    return sum(i * s for i, s in zip(index, strides))
 
 
 def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
@@ -60,8 +60,9 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
         out_index : return index corresponding to position.
 
     """
-    # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    for i in range(len(out_index) - 1, -1, -1):
+        out_index[i] = ordinal % shape[i]
+        ordinal //= shape[i]
 
 
 def broadcast_index(
@@ -83,8 +84,10 @@ def broadcast_index(
     Returns:
         None
     """
-    # TODO: Implement for Task 2.2.
-    raise NotImplementedError("Need to implement for Task 2.2")
+    shape_diff = len(big_shape) - len(shape)
+
+    for i in range(len(shape)):
+        out_index[i] = 0 if shape[i] == 1 else big_index[i + shape_diff]
 
 
 def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
@@ -101,8 +104,15 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
     Raises:
         IndexingError : if cannot broadcast
     """
-    # TODO: Implement for Task 2.2.
-    raise NotImplementedError("Need to implement for Task 2.2")
+    s1 = (1,) * max(len(shape2) - len(shape1), 0) + tuple(shape1)
+    s2 = (1,) * max(len(shape1) - len(shape2), 0) + tuple(shape2)
+
+    broadcasted_shape = []
+    for d1, d2 in zip(s1, s2):
+        if d1 != d2 and d1 != 1 and d2 != 1:
+            raise IndexingError(f'Incompatible dimension sizes')
+        broadcasted_shape.append(max(d1, d2))
+    return tuple(broadcasted_shape)
 
 
 def strides_from_shape(shape: UserShape) -> UserStrides:
@@ -139,7 +149,8 @@ class TensorData:
         assert isinstance(strides, tuple), "Strides must be tuple"
         assert isinstance(shape, tuple), "Shape must be tuple"
         if len(strides) != len(shape):
-            raise IndexingError(f"Len of strides {strides} must match {shape}.")
+            raise IndexingError(
+                f"Len of strides {strides} must match {shape}.")
         self._strides = array(strides)
         self._shape = array(shape)
         self.strides = strides
@@ -178,12 +189,15 @@ class TensorData:
 
         # Check for errors
         if aindex.shape[0] != len(self.shape):
-            raise IndexingError(f"Index {aindex} must be size of {self.shape}.")
+            raise IndexingError(
+                f"Index {aindex} must be size of {self.shape}.")
         for i, ind in enumerate(aindex):
             if ind >= self.shape[i]:
-                raise IndexingError(f"Index {aindex} out of range {self.shape}.")
+                raise IndexingError(
+                    f"Index {aindex} out of range {self.shape}.")
             if ind < 0:
-                raise IndexingError(f"Negative indexing for {aindex} not supported.")
+                raise IndexingError(
+                    f"Negative indexing for {aindex} not supported.")
 
         # Call fast indexing.
         return index_to_position(array(index), self._strides)
@@ -222,8 +236,9 @@ class TensorData:
             range(len(self.shape))
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"
 
-        # TODO: Implement for Task 2.1.
-        raise NotImplementedError("Need to implement for Task 2.1")
+        shape, strides = zip(
+            *((self.shape[i], self.strides[i]) for i in order))
+        return TensorData(self._storage, shape, strides)
 
     def to_string(self) -> str:
         s = ""

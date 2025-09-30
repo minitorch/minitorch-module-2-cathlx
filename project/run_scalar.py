@@ -8,9 +8,11 @@ import minitorch
 
 
 class Network(minitorch.Module):
-    def __init__(self, hidden_layers):
+    def __init__(self, hidden_layers: int):
         super().__init__()
-        raise NotImplementedError("Need to include this file from past assignment.")
+        self.layer1 = Linear(2, hidden_layers)
+        self.layer2 = Linear(hidden_layers, hidden_layers)
+        self.layer3 = Linear(hidden_layers, 1)
 
     def forward(self, x):
         middle = [h.relu() for h in self.layer1.forward(x)]
@@ -19,7 +21,7 @@ class Network(minitorch.Module):
 
 
 class Linear(minitorch.Module):
-    def __init__(self, in_size, out_size):
+    def __init__(self, in_size: int, out_size: int) -> None:
         super().__init__()
         self.weights = []
         self.bias = []
@@ -28,7 +30,8 @@ class Linear(minitorch.Module):
             for j in range(out_size):
                 self.weights[i].append(
                     self.add_parameter(
-                        f"weight_{i}_{j}", minitorch.Scalar(2 * (random.random() - 0.5))
+                        f"weight_{i}_{j}", minitorch.Scalar(
+                            2 * (random.random() - 0.5))
                     )
                 )
         for j in range(out_size):
@@ -38,8 +41,15 @@ class Linear(minitorch.Module):
                 )
             )
 
-    def forward(self, inputs):
-        raise NotImplementedError("Need to include this file from past assignment.")
+    def forward(self, inputs: tuple[minitorch.Scalar]) -> list[minitorch.Scalar]:
+        y = [0.0] * len(self.bias)
+
+        for j in range(len(y)):
+            for i, x in enumerate(inputs):
+                y[j] = y[j] + x * self.weights[i][j].value
+            y[j] = y[j] + self.bias[j].value
+
+        return y
 
 
 def default_log_fn(epoch, total_loss, correct, losses):
@@ -53,7 +63,8 @@ class ScalarTrain:
 
     def run_one(self, x):
         return self.model.forward(
-            (minitorch.Scalar(x[0], name="x_1"), minitorch.Scalar(x[1], name="x_2"))
+            (minitorch.Scalar(x[0], name="x_1"),
+             minitorch.Scalar(x[1], name="x_2"))
         )
 
     def train(self, data, learning_rate, max_epochs=500, log_fn=default_log_fn):
