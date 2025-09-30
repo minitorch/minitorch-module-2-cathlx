@@ -95,7 +95,7 @@ class Scalar:
         return Add.apply(self, b)  # type: ignore
 
     def __bool__(self) -> bool:
-        return bool(self.data)  # type: ignore
+        return bool(self.data)
 
     def __lt__(self, b: ScalarLike) -> Scalar:
         return LT.apply(self, b)  # type: ignore
@@ -104,19 +104,19 @@ class Scalar:
         return LT.apply(Neg.apply(self), Neg.apply(b))  # type: ignore
 
     def __eq__(self, b: ScalarLike) -> Scalar:  # type: ignore[override]
-        return EQ.apply(self, b)
+        return EQ.apply(self, b)  # type: ignore
 
     def __sub__(self, b: ScalarLike) -> Scalar:
         return Add.apply(self, Neg.apply(b))  # type: ignore
 
     def __neg__(self) -> Scalar:
-        return Neg.apply(self)
+        return Neg.apply(self)  # type: ignore
 
     def __radd__(self, b: ScalarLike) -> Scalar:
-        return self + b  # type: ignore
+        return self + b
 
     def __rmul__(self, b: ScalarLike) -> Scalar:
-        return self * b  # type: ignore
+        return self * b
 
     def log(self) -> Scalar:
         return Log.apply(self)  # type: ignore
