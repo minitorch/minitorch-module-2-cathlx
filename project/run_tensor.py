@@ -12,7 +12,7 @@ def RParam(*shape):
 
 
 class Network(minitorch.Module):
-    def __init__(self, hidden_layers):
+    def __init__(self, hidden_layers: int):
         super().__init__()
 
         # Submodules
@@ -21,20 +21,45 @@ class Network(minitorch.Module):
         self.layer3 = Linear(hidden_layers, 1)
 
     def forward(self, x):
-        # TODO: Implement for Task 2.5.
-        raise NotImplementedError("Need to implement for Task 2.5")
+        h = self.layer1.forward(x).relu()
+        h = self.layer2.forward(h).relu()
+        return self.layer3.forward(h).sigmoid()
 
 
 class Linear(minitorch.Module):
-    def __init__(self, in_size, out_size):
+    def __init__(self, in_size: int, out_size: int):
         super().__init__()
         self.weights = RParam(in_size, out_size)
         self.bias = RParam(out_size)
         self.out_size = out_size
 
-    def forward(self, x):
-        # TODO: Implement for Task 2.5.
-        raise NotImplementedError("Need to implement for Task 2.5")
+    def forward(self, x: minitorch.Tensor) -> minitorch.Tensor:
+        # backward like this doesn't work :(
+
+        # W = self.weights.value
+        # out = minitorch.zeros((x.shape[0], W.shape[1]))
+
+        # for w_col in range(W.shape[1]):
+        #     for x_row in range(x.shape[0]):
+        #         for i in range(W.shape[0]):
+        #             out[x_row, w_col] = out[x_row, w_col] + x[x_row, i] * W[i, w_col]
+        # return out.f.add_zip(out, self.bias.value) # (50, 2), (2,)
+
+        # x_unsqueeze_1 = x.view(x.shape[0], 1, x.shape[1]) # x: (batch_size, in_size) -> (batch_size, 1, in_size)
+        # weights = self.weights.value.permute(1, 0) # weights: (in_size, out_size) -> (out_size, in_size)
+
+        # dot_products = (x_unsqueeze_1 * weights).sum(2) # (batch_size, out_size, 1)
+        # both shapes broadcast to (batch_size, out_size, in_size) under the hood
+        # dims represent: batch, neurons, features
+        # for each batch: x has it's in_size features (all of them) repeated out_size times (for each neuron)
+        #                 weights has all of it's out_size neurons once for every of in_size features
+        # x * w: -> result: (batch_size, out_size, in_size)
+        # for each batch and neuron dim 2 contains {x_i * w_i} - sum along dim 2 to get dot product
+
+        #  return dot_products.view(x.shape[0], self.out_size) + self.bias.value
+
+        # idk why, but backward only works for one-liner
+        return (x.view(x.shape[0], 1, x.shape[1]) * self.weights.value.permute(1, 0)).sum(2).view(x.shape[0], self.out_size) + self.bias.value
 
 
 def default_log_fn(epoch, total_loss, correct, losses):

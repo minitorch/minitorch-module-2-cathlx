@@ -290,7 +290,8 @@ class Tensor:
 
         # Case 3: Still different, reduce extra dims.
         out = buf
-        orig_shape = [1] * (len(out.shape) - len(self.shape)) + list(self.shape)
+        orig_shape = [1] * (len(out.shape) - len(self.shape)
+                            ) + list(self.shape)
         for dim, shape in enumerate(out.shape):
             if orig_shape[dim] == 1 and shape != 1:
                 out = self.backend.add_reduce(out, dim)
@@ -302,9 +303,9 @@ class Tensor:
     def zeros(self, shape: Optional[UserShape] = None) -> Tensor:
         def zero(shape: UserShape) -> Tensor:
             return Tensor.make(
-                [0.0] * int(operators.prod(shape)), shape, backend=self.backend
+                [0.0] * int(operators.prod(shape)), shape, backend=self.backend  # type: ignore
             )
-
+        
         if shape is None:
             out = zero(self.shape)
         else:
@@ -331,7 +332,7 @@ class Tensor:
         assert self.is_leaf(), "Only leaf variables can have derivatives."
         if self.grad is None:
             self.grad = Tensor.make(
-                [0] * int(operators.prod(self.shape)), self.shape, backend=self.backend
+                [0] * int(operators.prod(self.shape)), self.shape, backend=self.backend  # type: ignore
             )
         self.grad += x
 

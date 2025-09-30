@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Iterable, List, Tuple
+from typing import Any, Iterable, Tuple
 
 from typing_extensions import Protocol
 
@@ -22,7 +22,12 @@ def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) 
     Returns:
         An approximation of $f'_i(x_0, \ldots, x_{n-1})$
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    vals_list = list(vals)
+    vals_list[arg] -= epsilon
+    lim_left = f(*vals_list)
+    vals_list[arg] += 2 * epsilon
+    lim_right = f(*vals_list)
+    return (lim_right - lim_left) / (2 * epsilon)
 
 
 variable_count = 1
@@ -60,7 +65,21 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    sorted = []
+    visited = set()
+
+    def visit(v: Variable) -> None:
+        if v.unique_id in visited or v.is_constant():
+            return
+
+        for p in v.parents:
+            visit(p)
+        visited.add(v.unique_id)
+
+        sorted.append(v)
+
+    visit(variable)
+    return reversed(sorted)
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -74,7 +93,17 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
 
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
-    raise NotImplementedError("Need to include this file from past assignment.")
+    sorted_vars = topological_sort(variable)
+    var_to_deriv = dict(
+        zip(range(1, variable.unique_id + 1), [0.0] * variable.unique_id))
+    var_to_deriv[variable.unique_id] += deriv
+
+    for var in sorted_vars:
+        if var.is_leaf():
+            var.accumulate_derivative(var_to_deriv[var.unique_id])
+        else:
+            for parent, derivative in var.chain_rule(var_to_deriv[var.unique_id]):
+                var_to_deriv[parent.unique_id] += derivative
 
 
 @dataclass

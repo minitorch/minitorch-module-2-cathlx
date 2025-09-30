@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
+    - name: Setup Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Setup
@@ -65,3 +69,4 @@ jobs:
         TASK-2-4_RESULTS: "${{steps.task-2-4.outputs.result}}"
       with:
         runners: setup,task-2-1,task-2-2,task-2-3,task-2-4
+        
