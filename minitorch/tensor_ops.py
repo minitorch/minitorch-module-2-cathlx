@@ -269,7 +269,7 @@ def tensor_map(fn: Callable[[float], float]) -> Any:
         in_shape: Shape,
         in_strides: Strides,
     ) -> None:
-        out_size = operators.prod(out_shape)
+        out_size = int(operators.prod(out_shape))  # type: ignore
 
         in_index = np.zeros_like(in_shape)
         out_index = np.zeros_like(out_shape)
@@ -333,7 +333,7 @@ def tensor_zip(fn: Callable[[float, float], float]) -> Any:
         b_shape: Shape,
         b_strides: Strides,
     ) -> None:
-        out_size = operators.prod(out_shape)
+        out_size = int(operators.prod(out_shape))  # type: ignore
 
         a_index = np.zeros_like(a_shape)
         b_index = np.zeros_like(b_shape)
@@ -388,7 +388,7 @@ def tensor_reduce(fn: Callable[[float, float], float]) -> Any:
         a_strides: Strides,
         reduce_dim: int,
     ) -> None:
-        a_size = operators.prod(a_shape)
+        a_size = int(operators.prod(a_shape))  # type: ignore
 
         a_index = np.zeros_like(a_shape)
         out_index = np.zeros_like(out_shape)
@@ -396,7 +396,8 @@ def tensor_reduce(fn: Callable[[float, float], float]) -> Any:
         for i in range(a_size):
             to_index(i, a_shape, a_index)  # element index in input tensor
 
-            out_index = list(a_index)  # create an independent copy
+            out_index = list(a_index)  # type: ignore
+            # create an independent copy
             out_index[reduce_dim] = 0  # doesn't change a_index
 
             # element position in a storage

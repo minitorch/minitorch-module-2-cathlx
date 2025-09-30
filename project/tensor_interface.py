@@ -13,7 +13,7 @@ def st_select_index(tensor_shape, n_cols=3):
     cols = st.columns(n_cols)
     for idx, dim in enumerate(tensor_shape):
         out_index[idx] = cols[idx % n_cols].number_input(
-            f"Dimension {idx} index:", value=0, min_value=0, max_value=dim - 1
+            f"Dimension {idx} index: ", value=0, min_value=0, max_value=dim - 1
         )
     return out_index
 
@@ -84,7 +84,7 @@ def st_visualize_tensor(
 
     if position_in_storage >= 0 and show_value:
         st.write(
-            f"**Value at position {position_in_storage}:** {tensor._tensor._storage[position_in_storage]}"
+            f"**Value at position {position_in_storage}: ** {tensor._tensor._storage[position_in_storage]}"
         )
 
     # Map index to highlight since tensor_figure doesn't know about strides
@@ -121,13 +121,13 @@ def st_visualize_tensor(
 
 
 def interface_visualize_tensor(tensor: Tensor, hide_function_defs: bool):
-    st.write(f"**Tensor strides:** {tensor._tensor.strides}")
+    st.write(f"**Tensor strides: ** {tensor._tensor.strides}")
     selected_position = st.slider(
         "Selected position in storage", 0, len(tensor._tensor._storage) - 1, value=0
     )
     out_index = [0] * len(tensor.shape)
     to_index(selected_position, tensor.shape, out_index)
-    st.write(f"**Corresponding index:** {out_index}")
+    st.write(f"**Corresponding index: ** {out_index}")
     st_visualize_tensor(tensor, out_index, show_value=False)
     st_visualize_storage(tensor, selected_position)
 
@@ -153,7 +153,7 @@ def interface_to_index(tensor: Tensor, hide_function_defs: bool):
         with st.expander("Show function definition"):
             render_function(to_index)
     tensor_shape = tensor.shape
-    st.write(f"**Tensor strides:** {tensor._tensor.strides}")
+    st.write(f"**Tensor strides: ** {tensor._tensor.strides}")
     selected_position = st.number_input(
         "Position in storage",
         value=0,
@@ -165,7 +165,7 @@ def interface_to_index(tensor: Tensor, hide_function_defs: bool):
     st.write(
         f"**Value at position {selected_position}:** {tensor._tensor._storage[selected_position]}"
     )
-    st.write("**Out index:**", out_index)
+    st.write("**Out index: **", out_index)
 
     st_visualize_tensor(tensor, out_index, show_value=False)
 
@@ -187,16 +187,16 @@ def interface_permute(tensor: Tensor, hide_function_defs: bool):
         with st.expander("Show function definition"):
             render_function(TensorData.permute)
 
-    st.write(f"**Tensor strides:** {tensor._tensor.strides}")
+    st.write(f"**Tensor strides: ** {tensor._tensor.strides}")
     default_permutation = list(range(len(tensor.shape)))
     default_permutation.reverse()
     permutation = eval(st.text_input(
         "Tensor permutation", value=default_permutation))
     p_tensor = tensor.permute(*permutation)
     p_tensor_strides = p_tensor._tensor.strides
-    st.write(f"**Permuted tensor strides:** {p_tensor_strides}")
+    st.write(f"**Permuted tensor strides: ** {p_tensor_strides}")
 
-    st.write("**Try selecting a tensor value by index:**")
+    st.write("**Try selecting a tensor value by index: **")
     out_index = st_select_index(tensor.shape)
     viz_type = st.selectbox(
         "Choose tensor visualization", options=["Original tensor", "Permuted tensor"]

@@ -217,6 +217,7 @@ class Permute(Function):
         order_inverse = np.argsort([int(order[i]) for i in range(order.size)])
         return grad_output._new(grad_output._tensor.permute(*order_inverse)), 0.0
 
+
 class View(Function):
     @staticmethod
     def forward(ctx: Context, a: Tensor, shape: Tensor) -> Tensor:
@@ -302,7 +303,8 @@ def rand(
     Returns:
         :class:`Tensor` : new tensor
     """
-    vals = [random.random() for _ in range(int(operators.prod(shape)))]
+    vals = [random.random()
+            for _ in range(int(operators.prod(shape)))]  # type: ignore
     tensor = minitorch.Tensor.make(vals, shape, backend=backend)
     tensor.requires_grad_(requires_grad)
     return tensor

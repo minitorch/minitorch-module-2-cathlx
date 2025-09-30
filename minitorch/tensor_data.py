@@ -153,7 +153,7 @@ class TensorData:
         self._shape = array(shape)
         self.strides = strides
         self.dims = len(strides)
-        self.size = int(prod(shape))
+        self.size = int(prod(shape))  # type: ignore
         self.shape = shape
         assert len(self._storage) == self.size
 
@@ -249,7 +249,7 @@ class TensorData:
                     break
             s += l
             v = self.get(index)
-            s += f"{v:3.2f}"
+            s += f"{v: 3.2f}"
             l = ""
             for i in range(len(index) - 1, -1, -1):
                 if index[i] == self.shape[i] - 1:
