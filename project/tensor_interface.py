@@ -163,7 +163,7 @@ def interface_to_index(tensor: Tensor, hide_function_defs: bool):
     out_index = [0] * len(tensor_shape)
     to_index(selected_position, tensor_shape, out_index)
     st.write(
-        f"**Value at position {selected_position}:** {tensor._tensor._storage[selected_position]}"
+        f"**Value at position {selected_position}: ** {tensor._tensor._storage[selected_position]}"
     )
     st.write("**Out index: **", out_index)
 

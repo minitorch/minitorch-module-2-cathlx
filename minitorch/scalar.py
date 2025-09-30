@@ -82,53 +82,53 @@ class Scalar:
     def __repr__(self) -> str:
         return "Scalar(%f)" % self.data
 
-    def __mul__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return Mul.apply(self, b)
+    def __mul__(self, b: ScalarLike) -> Scalar:
+        return Mul.apply(self, b)  # type: ignore
 
-    def __truediv__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return Mul.apply(self, Inv.apply(b))
+    def __truediv__(self, b: ScalarLike) -> Scalar:
+        return Mul.apply(self, Inv.apply(b))  # type: ignore
 
-    def __rtruediv__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return Mul.apply(b, Inv.apply(self))
+    def __rtruediv__(self, b: ScalarLike) -> Scalar:
+        return Mul.apply(b, Inv.apply(self))  # type: ignore
 
-    def __add__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return Add.apply(self, b)
+    def __add__(self, b: ScalarLike) -> Scalar:
+        return Add.apply(self, b)  # type: ignore
 
-    def __bool__(self) -> bool:  # type: ignore
-        return bool(self.data)
+    def __bool__(self) -> bool:
+        return bool(self.data)  # type: ignore
 
-    def __lt__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return LT.apply(self, b)
+    def __lt__(self, b: ScalarLike) -> Scalar:
+        return LT.apply(self, b)  # type: ignore
 
     def __gt__(self, b: ScalarLike) -> Scalar:
-        return LT.apply(Neg.apply(self), Neg.apply(b))
+        return LT.apply(Neg.apply(self), Neg.apply(b))  # type: ignore
 
     def __eq__(self, b: ScalarLike) -> Scalar:  # type: ignore[override]
         return EQ.apply(self, b)
 
-    def __sub__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return Add.apply(self, Neg.apply(b))
+    def __sub__(self, b: ScalarLike) -> Scalar:
+        return Add.apply(self, Neg.apply(b))  # type: ignore
 
     def __neg__(self) -> Scalar:
         return Neg.apply(self)
 
-    def __radd__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return self + b
+    def __radd__(self, b: ScalarLike) -> Scalar:
+        return self + b  # type: ignore
 
-    def __rmul__(self, b: ScalarLike) -> Scalar:  # type: ignore
-        return self * b
+    def __rmul__(self, b: ScalarLike) -> Scalar:
+        return self * b  # type: ignore
 
-    def log(self) -> Scalar:  # type: ignore
-        return Log.apply(self)
+    def log(self) -> Scalar:
+        return Log.apply(self)  # type: ignore
 
-    def exp(self) -> Scalar:  # type: ignore
-        return Exp.apply(self)
+    def exp(self) -> Scalar:
+        return Exp.apply(self)  # type: ignore
 
-    def sigmoid(self) -> Scalar:  # type: ignore
-        return Sigmoid.apply(self)
+    def sigmoid(self) -> Scalar:
+        return Sigmoid.apply(self)  # type: ignore
 
-    def relu(self) -> Scalar:  # type: ignore
-        return ReLU.apply(self)
+    def relu(self) -> Scalar:
+        return ReLU.apply(self)  # type: ignore
 
     # Variable elements for backprop
 
