@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import random
-from itertools import zip_longest
 from typing import Iterable, Optional, Sequence, Tuple, Union
 
 import numba
 import numpy as np
 import numpy.typing as npt
 from numpy import array, float64
-from operator import itemgetter
 from typing_extensions import TypeAlias
 
 from .operators import prod
@@ -110,7 +108,7 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
     broadcasted_shape = []
     for d1, d2 in zip(s1, s2):
         if d1 != d2 and d1 != 1 and d2 != 1:
-            raise IndexingError(f'Incompatible dimension sizes')
+            raise IndexingError('Incompatible dimension sizes')
         broadcasted_shape.append(max(d1, d2))
     return tuple(broadcasted_shape)
 
